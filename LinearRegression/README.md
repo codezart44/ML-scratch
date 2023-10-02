@@ -9,11 +9,10 @@ ___
 ### Ordinary Least Squares (OLS)
 ___
 * Find closest approximated solution β' to X•β = y
-* Projecting y down to Col X and find a solution for X•β' = ŷ
+* Projecting y down on Col X and find a solution for X•β' = ŷ
 ```
 X.T • Xβ' = X.T • y
 β' = (X.T • X)^-1 • (X.T • y)
-
 ```
 //note requires X to have linearly independent columns to be invertible (IMT)
 
