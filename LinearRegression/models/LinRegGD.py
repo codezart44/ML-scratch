@@ -39,7 +39,7 @@ class LinearRegressionGD:
         w = np.zeros(n_features)
         b = .0
 
-        for _ in range(iter):
+        for _ in range(int(iter)):
             db = -2/m_samples * np.sum(y-(X @ w + b))
             dw = -2/m_samples * X.T @ (y-(X @ w + b))
 

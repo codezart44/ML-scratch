@@ -36,10 +36,10 @@ class LinearRegressionOLS:
         rank = np.linalg.matrix_rank(A=X)       # rank = dim Col X (num lin. inde. cols)
         if rank < n_features: raise ValueError('Columns of X are not linearly independent.')
 
-        beta = np.linalg.inv(X.T @ X) @ (X.T @ y)
+        B = np.linalg.inv(X.T @ X) @ (X.T @ y)  # beta
 
-        self.b = beta[0]
-        self.w = beta[1:]
+        self.b = B[0]
+        self.w = B[1:]
 
 
     def predict(self, X: np.ndarray) -> np.ndarray:

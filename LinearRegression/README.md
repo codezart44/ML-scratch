@@ -1,43 +1,43 @@
 ## Linear Regression implemented from scratch
 ___
 
-### General
-___
-- This is an algorithm focused implementation of Linear Regression for ML applications
-- The point of this project is to gain a deeper undestanding of the math behind linReg. 
+- The point of this project is to understand the math behind linear regression. 
 - Linear regression finds a best fit line through a set of datapoints and uses that line to evaluate (predict) unseen data. 
+- It is assumed that the dataset follows a linear pattern.
 
 
-### Assumption
+### Ordinary Least Squares (OLS)
 ___
-- Dataset follows linear pattern
-
-### Goal
-___
-- Find slope (trend) of data
-
-### Fomulas
-___
+* Find closest approximated solution β' to X•β = y
+* Projecting y down to Col X and find a solution for X•β' = ŷ
 ```
-y_hat = w*x + b         # weight (w) & bias (b)
-
-                      n                       n
-MSE = J(w, b) = 1/N * ∑(yi - y_hat)^2 = 1/N * ∑(yi - (w*xi + b))^2
-                     i=1                     i=1
-```
-
-### Approach
-___
-- Trying to minimize MSE to have find best fit
-- Gradient Descent
-
-### Gradient Descent
-___
-```python
-# Descent as in tuning w & b to minimize MSE as fast as possible
-
-w = w - ɑ*dw            # (delta w)
-b = b - ɑ*db            # (delta b)
+X.T • Xβ' = X.T • y
+β' = (X.T • X)^-1 • (X.T • y)
 
 ```
+//note requires X to have linearly independent columns to be invertible (IMT)
+
+
+### Gradient Descent (GD)
+___
+* Minimize MSE (cost function) 
+* Calculating pertial derivatives of cost funtion with respect to b & w
+```
+                      n
+MSE = f(b, w) = 1/N * ∑(yi - (w*xi + b))^2
+                     i=1
+
+# repeat n times:
+            N
+db = -2/N * ∑(y - (X•w + b))
+           i=1
+dw = -2/N * X.T • (y - (X•w + b))
+
+b = b - ɑ * db
+w = b - ɑ * dw
+```
+//note sensitive to learning rate and initial values for bias & weights. Requires scaling.
+
+
+
 

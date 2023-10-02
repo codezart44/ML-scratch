@@ -6,23 +6,6 @@ from models.LinRegGD import LinearRegressionGD
 from models.LinRegOLS import LinearRegressionOLS
 
 
-
-
-# a = np.array([
-#     [1,1,1,1],
-#     [1,1,1,1]
-# ])
-# b = np.array([
-#     [2,2],
-#     [2,2],
-#     [3,3],
-#     [2,2]
-# ])
-# print(a @ b)
-
-# quit()
-
-
 m_samples = 100
 
 noise = (50 * np.random.randn(m_samples))
