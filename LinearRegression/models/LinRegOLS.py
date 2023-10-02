@@ -10,39 +10,39 @@ class LinearRegressionOLS:
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
         '''## Training
+        Find solution to system Xβ = y, where β is the vector of the bias (b) and weights (w). 
 
-        XB = y does not always have a solution
-        instead:
-        X.T @ XB = X.T @ y  (project y down onto the X-plane?)
-        solve:
-        B = np.linalg.solve(X.T@y, X.T@X)
+        Since Xβ = y does not always have a solution we approximate it by:
 
-        alt. linalg.lstsq() for least squares NOTE look up!
+        - projecting y down on the columns space of X (Col X) as ŷ. 
+        - calculate the normal vector from Col X, y-ŷ = y-Xβ'. 
+        - Since y-Xβ is normal to Col X (and thus Col X.T) we have X.T • (y-Xβ) = 0
+        - giving us X.T • Xβ = X.T • y
+        - and finally β = (X.T • X)^-1 • X.T • y
+        
+        >>> X.T @ XB = X.T @ y
+        >>> β = np.linalg.inv(X.T @ X) @ X.T @ y
+        
+        Can also use:
+        >>> np.linalg.solve(X.T@X, X.T@y)
+        >>> np.linalg.lstsq(X, y, rcond=None)
         '''
 
         m_samples, n_features = X.shape
 
         X = np.hstack((np.ones(m_samples).reshape(-1,1), X))
         n_features += 1
-
-        rank = np.linalg.matrix_rank(A=X)
+        
+        rank = np.linalg.matrix_rank(A=X)       # rank = dim Col X (num lin. inde. cols)
         if rank < n_features: raise ValueError('Columns of X are not linearly independent.')
 
-        coeffs = np.linalg.inv(X.T @ X) @ (X.T @ y)
-        # coeffs = np.linalg.solve(a=X.T @ X, b=X.T @ y)       ## make sure nop linear independence
+        beta = np.linalg.inv(X.T @ X) @ (X.T @ y)
 
-        self.b = coeffs[0]
-        self.w = coeffs[1:]
+        self.b = beta[0]
+        self.w = beta[1:]
 
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         ''''''
         y_pred = X @ self.w + self.b
         return y_pred
-
-
-
-
-
-
-# mse = 1/N * np.sum(np.square(y-y_hat))      # cost function

@@ -10,49 +10,48 @@ class LinearRegressionGD:
         self.b = None
 
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, alpha: float=0.01, iter: int=1e3) -> None:
         ''' ## Training
         Find weight (w) and bias (b) that minimizes MSE (cost) of residuals.
 
-        Use Gradient Descent, Jocobian with derivatives of f with respect to w & b:
+        Use Gradient Descent. Repeated subtraction of gradient (df/db, df/dw)
 
-        >>> df/dw
-        >>> df/db
+        >>> ɑ = 0.01            # learning rate
+        >>> iter = 1000         # repetitions of gradient subtraction
 
         Init w & b to zero.
         Given a train data:
-        - calculate residuals (MSE rather).
+        - calculate residuals.
+        - determine gradient of MSE = f(b, w)
         - find new w & b that minimizes MSE using gradient descent.
         - update w & b, rinse and repeat n times. 
 
-        >>> y_hat = wx + b
+        >>> MSE = f(w, b) = 1/m_samples + sum((y-(X @ w + b))**2)
+        >>> db = df/db = fb(b, w) = -2/m_samples * sum(y-(X @ w+ b))
+        >>> dw = df/dw = fw(b, w) = -2/m_samples * X.T @ (y-(X @ w + b))
+        >>> grad f = ∇f(b, w) = (fb(b, w), fw(b, w)) = (df/db, df/dw)
+        >>> b = b - ɑ*db
+        >>> w = w - ɑ*dw
         '''
-        alpha = 0.01       # learning rate
-        n = 1000
 
         m_samples, n_features = X.shape
-        X = np.hstack((np.ones(m_samples).reshape(-1, 1), X))
         
-        n_features += 1
-        coeffs = np.zeros(n_features)
+        w = np.zeros(n_features)
+        b = .0
 
-        for _ in range(n):
-            y_hat = X @ coeffs
-            coeffs -= alpha * 1/m_samples * X.T @ (y-y_hat)
+        for _ in range(iter):
+            db = -2/m_samples * np.sum(y-(X @ w + b))
+            dw = -2/m_samples * X.T @ (y-(X @ w + b))
 
-            # dw = (2/N) * X.T @ (y_hat-y)                  # d(wx + b)^2/dw = 2x * (wx + b)
-            # db = (2/N) * np.sum(y_hat-y)                  # d(wx + b)^2/db = 2 * (wx + b)
+            b -= alpha * db
+            w -= alpha * dw
 
-            # w = w - alpha * dw          # add negative gradient to minimize loss as fast as possible
-            # b = b - alpha * db
-
-        self.b = coeffs[0]
-        self.w = coeffs[1:]
+        self.b = b
+        self.w = w
 
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         ''''''
         y_pred = X @ self.w + self.b
         return y_pred
-    
 
