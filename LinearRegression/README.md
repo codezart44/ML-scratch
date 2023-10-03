@@ -38,5 +38,48 @@ w = b - ɑ * dw
 //note sensitive to learning rate and initial values for bias & weights. Requires scaling.
 
 
+### Scaling & rescaling 
+___
+Standardizing data
+```
+µx, µy = mean(X), mean(y)
+σx, σy = std(X), std(y) 
+Xstd = (X - µx)/σx
+ystd = (y - µy)/σy
+
+# Xrbu Robust scaling
+# yrbu
+
+# Xmmx minmax scaling
+# ymmx
+
+# Xmab maxabs scaling
+# ymab
+```
+
+Rescaling weights and bias back to original scale
+```
+from the scaling we know:
+
+Xstd = (X - µx)/σx
+ystd = (y - µy)/σy
+
+And in the approximation of ystd we have:
+ystd = w * Xstd + b
+(y - µy)/σy = w*(X - µx)/σx + b
+y - µy = w*(X - µx)σy/σx + b*σy
+y - µy = w*σy/σx*X - w*µx*σy/σx + b*σy
+y = w*σy/σx*X - w*µx*σy/σx + b*σy + µy
+y = (w*σy/σx)X + (b*σy + µy - w*µx*σy/σx)
+
+and since y = w_orig * X + b_orig we have:
+
+w_orig * X + b_orig = (w*σy/σx)X + (b*σy + µy - w*µx*σy/σx)
+
+and comparing term by term we find:
+
+w_orig = w * σy/σx
+b_orig = b * σy + µy - w * µx * σy/σx
+```
 
 
