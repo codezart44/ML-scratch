@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from models.LinRegGD import LinearRegressionGD
 from models.LinRegOLS import LinearRegressionOLS
 
-
 m_samples = 100
 
 noise = (50 * np.random.randn(m_samples))

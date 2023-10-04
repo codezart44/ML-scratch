@@ -82,4 +82,16 @@ w_orig = w * σy/σx
 b_orig = b * σy + µy - w * µx * σy/σx
 ```
 
-
+### Notes
+___
+![linreg_note_p1](./notes/linreg_note_p1.jpg)
+p.1
+___
+![linreg_note_p2](./notes/linreg_note_p2.jpg)
+p.2
+___
+![linreg_note_p3](./notes/linreg_note_p3.jpg)
+p.3
+___
+![linreg_note_p4](./notes/linreg_note_p4.jpg)
+p.4

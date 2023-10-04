@@ -23,9 +23,13 @@ Given a datapoint
     *  Select mode with shortest average distance among points
 
 
-### NOTES
-![kNN_note_p1](.notes/kNN_note_p1.jpg)
-![kNN_note_p2](.notes/kNN_note_p2.jpg)
+### Notes
+___
+![kNN_note_p1](./notes/kNN_note_p1.jpg)
+p.1
+___
+![kNN_note_p2](./notes/kNN_note_p2.jpg)
+p.2
 
 
 
