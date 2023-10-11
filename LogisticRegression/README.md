@@ -127,8 +127,10 @@ $$
 //cross entropy
 
 ...according to the log laws <br>
-$$ \log(A \times B) = \log(A) + \log(B)$$$
-$$ \log(A^b) = b \times \log(A)$$
+
+$ \log(A \times B) = \log(A) + \log(B)$
+
+$ \log(A^b) = b \times \log(A)$
 
 
 
