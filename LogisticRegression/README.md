@@ -154,16 +154,19 @@ The NLL function quantifies how well the sigmoid curve conforms to the label val
 #### Example low loss, good approximation
 
 $ y_i = 0, \hspace{2mm} p(y_i=1|x_i) = 0.05 \\$
+
 $ nll_i = -\log(l_i) = -(0 \times \log(0.05) + (1-0) \times \log(1-0.05)) = -\log(0.05) \approx 0.022$
 
 #### Example medium loss, decent approximation
 
 $ y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.8 \\$
+
 $ nll_i = -\log(l_i) = -(1 \times \log(0.8) + (1-1) \times \log(1-0.8)) = -\log(0.8) \approx 0.097$
 
 #### Example high loss, bad approximation
 
 $ y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.05 \\$
+
 $ nll_i = -\log(l_i) = -(1 \times \log(0.05) + (1-1) \times \log(1-0.05)) = -\log(0.05) \approx 1.30$
 
 
