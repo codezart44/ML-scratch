@@ -62,6 +62,7 @@ $$
 l_i = L(\mathbf{w}, b; y_i, \mathbf{x_i})
 \end{equation}
 $$
+
 $$
 \begin{equation}
 l_i = p_i^{y_i} \times (1-p_i)^{1-y_i}, \hspace{3mm} y_i \in \set{0, 1}
@@ -75,6 +76,7 @@ $$
 L = L(\mathbf{w}, b; \mathbf{y}, \mathbf{X}) = l_1 \times l_2 \times \ldots \times l_m
 \end{equation}
 $$
+
 $$
 \begin{equation}
 L = \prod_{i=1}^{m}p_i^{y_i} \times (1-p_i)^{1-y_i}, \hspace{3mm} y_i \in \set{0, 1}
@@ -121,6 +123,7 @@ $$
 \log(L) = \sum_{i=1}^{m} y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i)
 \end{equation}
 $$
+
 //cross entropy
 
 ...according to the log laws <br>
@@ -129,7 +132,7 @@ $ \log(A^b) = b \times \log(A) \\$
 
 
 
-INstead of trying to maximize the negative value os the sum of log-likelihoos we instead try to minimize the positive value of the negative log-likelihood turning it into a loss function. This is a standard in machine learning optimization, that you would want to minimize the loss function. Dividing by $m$ gives the mean of negative log-likelihoods. This measure is often abbreviated as the NLL - negative log-likelihood.
+Instead of trying to maximize the negative value os the sum of log-likelihoos we instead try to minimize the positive value of the negative log-likelihood turning it into a loss function. This is a standard in machine learning optimization, that you would want to minimize the loss function. Dividing by $m$ gives the mean of negative log-likelihoods. This measure is often abbreviated as the NLL - negative log-likelihood.
 
 $$
 \begin{equation}
@@ -149,14 +152,17 @@ The NLL function quantifies how well the sigmoid curve conforms to the label val
 
 
 #### Example low loss, good approximation
+
 $ y_i = 0, \hspace{2mm} p(y_i=1|x_i) = 0.05 \\$
 $ nll_i = -\log(l_i) = -(0 \times \log(0.05) + (1-0) \times \log(1-0.05)) = -\log(0.05) \approx 0.022$
 
 #### Example medium loss, decent approximation
+
 $ y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.8 \\$
 $ nll_i = -\log(l_i) = -(1 \times \log(0.8) + (1-1) \times \log(1-0.8)) = -\log(0.8) \approx 0.097$
 
 #### Example high loss, bad approximation
+
 $ y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.05 \\$
 $ nll_i = -\log(l_i) = -(1 \times \log(0.05) + (1-1) \times \log(1-0.05)) = -\log(0.05) \approx 1.30$
 
@@ -166,7 +172,9 @@ We want the negative log-likelihood loss to be as close as possible to zero and 
 
 
 ## Finding partial differentials $\frac{\partial{f}}{\partial{b}}$ & $\frac{\partial{f}}{\partial{w}}$
+
 Negative Log Likelihood - NLL (loss)
+
 $$
 NLL = -\frac{1}{m}\sum_{i=1}^{m} y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i)
 $$
