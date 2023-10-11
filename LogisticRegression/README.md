@@ -1,9 +1,9 @@
-## Logistic Regression
+# Logistic Regression
 ___
 
 ## Introduction
 X is a matrix of m samples and n features, w is the vector of n weights and b a single scalar bias. 
-<!-- eq.1 -->
+
 $$              
 \begin{equation}
 \mathbf{z} = \mathbf{X} \cdot \mathbf{w} + b 
@@ -11,8 +11,8 @@ $$
 $$
 
 The sigmoid function maps the real numberline to the open interval 0 to 1.
-<!-- eq.2 -->
 $ \sigma: \R \mapsto (0, 1)$
+
 $$
 \begin{equation}
 \sigma{(\mathbf{z})} = \frac{1}{1+e^{-\mathbf{z}}} 
@@ -27,6 +27,7 @@ Calculating error with cross entropy function:
 The cross entropy loss function comes from the MLE of estimating w & b that maximizes the likelihood of observed data. 
 
 Given some input xi the predicted probability p(y=1|xi) for the positive class is given by:
+
 $$
 \begin{equation}
 p_i = p(y=1|\mathbf{x_i}) = \frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w}+b)}}, \hspace{3mm} \text{0 < i < m}
