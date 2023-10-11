@@ -127,9 +127,9 @@ $$
 //cross entropy
 
 ...according to the log laws <br>
-$ i) \hspace{2.1cm} \log(A \times B) = \log(A) + \log(B)$
+i) $\hspace{2.1cm} \log(A \times B) = \log(A) + \log(B)$
 
-$ ii) \hspace{2cm} \log(A^b) = b \times \log(A)$
+ii) $\hspace{2cm} \log(A^b) = b \times \log(A)$
 
 
 
@@ -154,33 +154,21 @@ The NLL function quantifies how well the sigmoid curve conforms to the label val
 
 #### Example low loss, good approximation
 
-$ \hspace{1cm}
-y_i = 0, \hspace{2mm} p(y_i=1|x_i) = 0.05
-$
+• $\hspace{1cm} y_i = 0, \hspace{2mm} p(y_i=1|x_i) = 0.05$
 
-$ \hspace{1cm}
-nll_i = -\log(l_i) = -(0 \times \log(0.05) + (1-0) \times \log(1-0.05)) = -\log(0.05) \approx 0.022
-$
+• $\hspace{1cm} nll_i = -\log(l_i) = -(0 \times \log(0.05) + (1-0) \times \log(1-0.05)) = -\log(0.05) \approx 0.022$
 
 #### Example medium loss, decent approximation
 
-$ \hspace{1cm}
-y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.8
-$
+• $ \hspace{1cm} y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.8$
 
-$ \hspace{1cm}
-nll_i = -\log(l_i) = -(1 \times \log(0.8) + (1-1) \times \log(1-0.8)) = -\log(0.8) \approx 0.097
-$
+• $\hspace{1cm} nll_i = -\log(l_i) = -(1 \times \log(0.8) + (1-1) \times \log(1-0.8)) = -\log(0.8) \approx 0.097$
 
 #### Example high loss, bad approximation
 
-$ \hspace{1cm}
-y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.05 
-$
+• $\hspace{1cm} y_i = 1, \hspace{2mm} p(y_i=1|x_i) = 0.05 $
 
-$ \hspace{1cm}
-nll_i = -\log(l_i) = -(1 \times \log(0.05) + (1-1) \times \log(1-0.05)) = -\log(0.05) \approx 1.30
-$
+• $\hspace{1cm} nll_i = -\log(l_i) = -(1 \times \log(0.05) + (1-1) \times \log(1-0.05)) = -\log(0.05) \approx 1.30$
 
 
 We want the negative log-likelihood loss to be as close as possible to zero and thus try adjust model parameters $b$ & $w$ to minimize the NLL function value.
@@ -199,25 +187,19 @@ $$
 
 // rewriting the function start
 
-$(1) \hspace{2cm} nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i) \\$
+(1) $\hspace{2cm} nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i) \\$
 
-$ (2) \hspace{2cm}
-nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(1-\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(2) $\hspace{2cm} nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(1-\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
-$ (3) \hspace{2cm}
-nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}} - \frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(3) $\hspace{2cm} nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}} - \frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
-$ (4) \hspace{2cm}
-nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(4) $\hspace{2cm} nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
-$ (5) \hspace{2cm}
-nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) - (1-y_i) \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(5) $\hspace{2cm} nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) - (1-y_i) \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
-$ (6) \hspace{2cm}
-nll_i = -y_i \times \log(1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) + (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + y_i \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(6) $\hspace{2cm} nll_i = -y_i \times \log(1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) + (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + y_i \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
-$ (7) \hspace{2cm}
-nll_i = (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
+(7) $\hspace{2cm} nll_i = (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
 // rewriting the function end
 
