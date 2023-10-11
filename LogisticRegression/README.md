@@ -127,10 +127,9 @@ $$
 //cross entropy
 
 ...according to the log laws <br>
+$$ \log(A \times B) = \log(A) + \log(B)$$
 
-$ \log(A \times B) = \log(A) + \log(B)$
-
-$ \log(A^b) = b \times \log(A)$
+$$ \log(A^b) = b \times \log(A)$$
 
 
 
@@ -188,7 +187,9 @@ We want the negative log-likelihood loss to be as close as possible to zero and 
 
 
 
-## Finding partial differentials $\frac{\partial{f}}{\partial{b}}$ & $\frac{\partial{f}}{\partial{w}}$
+## Finding partial differentials
+
+$\frac{\partial{f}}{\partial{b}}$ & $\frac{\partial{f}}{\partial{w}}$
 
 Negative Log Likelihood - NLL (loss)
 
@@ -196,26 +197,51 @@ $$
 NLL = -\frac{1}{m}\sum_{i=1}^{m} y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i)
 $$
 
+// rewriting the function start
+
 $$
-\begin{align} 
-& nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i) \\
-
-& nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(1-\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
-
-& nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}} - \frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
-
-& nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
-
-& nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) - (1-y_i) \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
-
-& nll_i = -y_i \times \log(1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) + (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + y_i \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
-
-& nll_i = (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}})
-
-\end{align}
+\begin{equation} 
+nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i) \\
+\end{equation}
 $$
 
-// rewriting the function
+$$
+\begin{equation} 
+nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(1-\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}})
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}} - \frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(\frac{e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) - (1-y_i) \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+nll_i = -y_i \times \log(1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}) + (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + y_i \times \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) \\
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+nll_i = (y_i-1) \times (\mathbf{x_i} \cdot \mathbf{w} + b) - \log({1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}})
+\end{equation}
+$$
+
+// rewriting the function end
 
 $$
 \begin{equation}
