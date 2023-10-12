@@ -9,14 +9,15 @@ from models.LogReg import LogisticRegression
 X = np.linspace(-49, 50, 100).reshape(-1, 1)
 y = np.hstack((np.zeros(75), np.ones(25)))
 
+X_std = (X-np.mean(X))/np.std(X)
 
 
 logreg = LogisticRegression()
 
 
-logreg.fit(X=X, y=y)
+logreg.fit(X=X_std, y=y)
 
-y_pred = logreg.predict(X=X)
+y_pred = logreg.predict(X=X_std)
 
 print(y_pred)
 

@@ -28,7 +28,7 @@ class LogisticRegression:
         m_samples, n_features = X.shape
 
         alpha = 0.01
-        iter = 10000
+        iter = 10_000
 
         b = 0.0
         w = np.zeros(n_features)

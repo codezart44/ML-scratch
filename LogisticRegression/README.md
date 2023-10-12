@@ -185,9 +185,11 @@ $$
 NLL = -\frac{1}{m}\sum_{i=1}^{m} y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i)
 $$
 
-// rewriting the function start
+// rewriting the function 
 
-(1) $\hspace{2cm} nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i) \\$
+{
+
+(1) $\hspace{2cm} nll_i = y_i \times \log(p_i) + (1-y_i) \times \log(1-p_i)$
 
 (2) $\hspace{2cm} nll_i = y_i \times \log(\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) + (1-y_i) \times \log(1-\frac{1}{1+e^{-(\mathbf{x_i} \cdot \mathbf{w} + b)}}) $
 
