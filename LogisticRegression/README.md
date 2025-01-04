@@ -53,7 +53,7 @@ $$
 
 The logistic (sigmoid) function tells us the probability of seeing the positive label $y_i = 1$ for a given datapoint $\mathbf{x_i}$. This is not a PDF since it does not represent a distribution of probability, integrating the logistic function over the real numberline $\mathbb{R}$ does not yield a cumulative probability of 1 as the CDF (cumulative distribution function) should and does. Meaning no, the logistic function is not a PDF.
 
-Instead we want to maximize the joint likelihood of observing the binary labels $\mathbf{y} = (y_1, y_2, \ldots)$ given the data  $\mathbf{X} = (\mathbf{x_1}, \mathbf{x_2}, \ldots)$. Assuming $z_i = \mathbf{x_i} \cdot \mathbf{w} + b$ is a strength measure for the probability of observing $y_i = 1$ we can model this relationship fairly accurate with the logistic (sigmoid) function, whereas large negative values of $z_i$ yields low probability of observing $y_i = 1$ and large positive values of $z_i$ yields high probability of observing $y_i = 1$ and a small range of high uncertainty for $z_i$ close to zero (around the inflection point of the curve).
+Instead we want to maximize the joint likelihood of observing the binary labels $\mathbf{y} = (y_1, y_2, \ldots)$ given the data  $\mathbf{X} = (\mathbf{x_1}, \mathbf{x_2}, \ldots)$. Assuming $z_i = \mathbf{x_i} \cdot \mathbf{w} + b$ is a strength measure for the probability of observing $y_i = 1$ we can model this relationship fairly accurate with the logistic (sigmoid) function, whereas large negative values of $z_i$ yields low probability of observing $y_i = 1$ and large positive values of $z_i$ yields high probability of observing $y_i = 1$ and a small range of high uncertainty for $z_i$ close to zero (around the inflection point of the curve). The logistic function can be seen as a "Probability Intensity Function", with probability of $y_i=1$ increasing as $z_i$ does. Though note that "probability intensity function" is not common terminology within machine learning or statistics. 
 
 The fit of the model to each data pair of $\mathbf{x_i}$ and $y_i$ is given by the likelihood of observing the correct label $y_i$ with our current parameter values for $\mathbf{w}$ and $b$. 
 
@@ -231,7 +231,7 @@ Not needed for $\mathbf{y}$ data since $\forall y_i \in \mathbf{y}, \hspace{2mm}
 Usually beneficial and sometimes necessary for $\mathbf{X}$ data. Need to align features and avoid exploding- / vanishing gradients.
 
 
-## Notes
+## Notes (Old)
 ___
 Q: __*Why the product of likelihoods and not the sum of likelihoods?*__
 
