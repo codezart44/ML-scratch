@@ -3,6 +3,7 @@ from numpy.typing import NDArray
 
 from pyml.base import Optimizer
 from pyml.base import Estimator
+from pyml.optimization.line_search.strong_wolfe import StrongWolfe
 
 
 class BFGS(Optimizer):  # Broyden Fletcher Goldfarb Shanno
@@ -20,24 +21,24 @@ class BFGS(Optimizer):  # Broyden Fletcher Goldfarb Shanno
         F = params.size
         If = np.eye(F)
 
-        tk = params
-        gk = estimator.gradient(x, y, params)  # gk
-        Bk = np.eye(F)  # inverse hessian approximation
+        loss = estimator.loss(x, y, params)
+        gk   = estimator.gradient(x, y, params)
+        tk   = params
+        Bk   = np.eye(F)  # inverse hessian approximation
 
         for i in range(0, self.iterations_max):
             if self.converged(gk) == True:
                 break
 
-            pk = - Bk @ gk  # update direction
-            alpha = self.line_search.run(estimator, x, y, tk, pk)
+            pk = - Bk @ gk  # step direction
+            alpha, loss, grad = self.line_search.run(estimator, x, y, loss, gk, tk, pk)
             params = params + alpha * pk
-            grad = estimator.gradient(x, y, params)
 
             Bk = self.inverse_hessian_update(If, Bk, tk, params, gk, grad)
             gk = grad
             tk = params
 
-            losses[i] = estimator.loss(x, y, params)
+            losses[i] = loss
 
         self.losses = losses
         return params
@@ -58,98 +59,87 @@ class BFGS(Optimizer):  # Broyden Fletcher Goldfarb Shanno
         Bk = Ak.T @ Bk @ Ak + Ck
         return Bk
         
-    def converged(self, grad: NDArray) -> bool:
-        return np.linalg.norm(grad, ord=2) <= self.tolerance
+    def converged(self, gk: NDArray) -> bool:
+        return gk @ gk <= self.tolerance ** 2
 
 
-class StrongWolfe:
+class LBFGS(Optimizer):  # Low memory Broyden Fletcher Goldfarb Shanno
     def __init__(
             self,
-            c1: float = 1e-4,
-            c2: float = 0.9,
-            iterations_max = 20,
+            m: int,
+            iterations_max: int,
+            tolerance: float,
         ):
-        assert 0 < c1 < c2 < 1, (c1, c2)
-        self.c1 = c1
-        self.c2 = c2
+        self.m = m
         self.iterations_max = iterations_max
+        self.tolerance = tolerance
 
-    def run(
-            self,
-            estimator: Estimator,
-            x: NDArray,
-            y: NDArray,
-            params: NDArray,
-            pk: NDArray,  # direction
-        ) -> float:
+        self.line_search = StrongWolfe(c1=1e-4, c2=0.9, iterations_max=20)
 
-        phi  = lambda alpha: estimator.loss(x, y, params + alpha * pk)
-        dphi = lambda alpha: estimator.gradient(x, y, params + alpha * pk) @ pk
+    def run(self, estimator, x, y, params):
+        losses = np.full((self.iterations_max,), fill_value=np.nan)
+        history = []
 
-        alpha_lo, alpha_hi = self.bracket(phi, dphi)
-        if alpha_hi == alpha_lo:
-            return alpha_hi
-        
-        alpha = self.zoom(phi, dphi, alpha_lo, alpha_hi)
-        return alpha
-    
-    def bracket(self, phi, dphi):
-        alpha_lo = 0
-        alpha_hi = np.inf
-        alpha = 1
-        phi_0  = phi(0)
-        dphi_0 = dphi(0)
-        
-        for _ in range(self.iterations_max):  # bracket
-            phi_alpha  = phi(alpha)
-            dphi_alpha = dphi(alpha)
+        loss = estimator.loss(x, y, params)
+        gk   = estimator.gradient(x, y, params)
+        tk   = params
 
-            if not self.armijo(phi_0, dphi_0, phi_alpha, alpha):
-                alpha_hi = alpha
+        for i in range(0, self.iterations_max):
+            if self.converged(gk) == True:
                 break
 
-            if not self.strong_wolfe(dphi_0, dphi_alpha):
-                if dphi_alpha > 0:
-                    alpha_hi = alpha
-                    break
-                else:
-                    alpha_lo = alpha
-                    alpha *= 2
-                    continue
+            pk = self.step_direction(gk, history)
+            alpha, loss, grad = self.line_search.run(estimator, x, y, loss, gk, tk, pk)
+            params = params + alpha * pk
 
-            return alpha, alpha
+            history.insert(0, self.record(tk, params, gk, grad))
+            history = history[:self.m]
+            gk = grad
+            tk = params
+
+            losses[i] = loss
+
+        self.losses = losses
+        return params
+
+    def step_direction(  # two tower algorithm
+            self,
+            gk: NDArray,
+            history: list[tuple[NDArray, NDArray, float]],
+        ) -> NDArray:
         
-        return alpha_lo, alpha_hi
+        m = min(self.m, len(history))
+        q = gk.copy()
+        alpha = np.empty(m, dtype=float)
 
-    def zoom(self, phi, dphi, alpha_lo, alpha_hi):
-        assert np.isfinite(alpha_hi), alpha_hi
-        phi_0  = phi(0)
-        dphi_0 = dphi(0)
+        for j in range(0, m, 1):
+            sj, yj, rhoj = history[j]
+            aj = rhoj * sj @ q
+            q -= aj * yj
+            alpha[j] = aj
+        if len(history) >= 1:
+            _, y1, rho1 = history[0]
+            gammak = 1.0 / (rho1 * (y1 @ y1))
+            q *= gammak
+        for j in range(m-1, -1, -1):
+            sj, yj, rhoj = history[j]
+            bj = rhoj * yj @ q
+            aj = alpha[j]
+            q += (aj - bj) * sj
 
-        for _ in range(self.iterations_max):  # zoom
-            alpha = 0.5 * (alpha_hi + alpha_lo)
-            phi_alpha  = phi(alpha)
-            dphi_alpha = dphi(alpha)
+        return -q
 
-            if not self.armijo(phi_0, dphi_0, phi_alpha, alpha):
-                alpha_hi = alpha
-                continue
+    def record(
+            self,
+            tk: NDArray, tk1: NDArray,
+            gk: NDArray, gk1: NDArray,
+        ) -> tuple[NDArray, NDArray, float]:
+        sk = tk1 - tk
+        yk = gk1 - gk
+        ys = yk @ sk
+        assert ys > 0, ys
+        rhok = 1 / ys
+        return (sk, yk, rhok)
 
-            if not self.strong_wolfe(dphi_0, dphi_alpha):
-                if dphi_alpha > 0:
-                    alpha_hi = alpha
-                else:
-                    alpha_lo = alpha
-                continue
-            
-            return alpha
-
-        raise RuntimeError
-
-    def armijo(self, phi_0, dphi_0, phi_alpha, alpha) -> bool:  
-        return phi_alpha - phi_0 <= self.c1 * alpha * dphi_0
-        # phi(alpha) - phi(0) <= c1 alpha phi'(0)
-
-    def strong_wolfe(self, dphi_0, dphi_alpha) -> bool:  
-        return np.abs(dphi_alpha) <= self.c2 * np.abs(dphi_0)
-        # |phi'(alpha)| <= c2|phi'(0)|
+    def converged(self, gk: NDArray) -> bool:
+        return gk @ gk <= self.tolerance ** 2

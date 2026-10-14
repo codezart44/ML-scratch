@@ -15,29 +15,36 @@ pyml/
 |   |-- decomposition.py
 |   |-- outlier.py
 |   |-- dimensionality.py
-|   classification/
+|-- classification/
 |   |-- decision_tree.py        next up
 |   |-- knn.py                  done
-|   |-- logistic_regression.py  rework
+|   |-- logistic_regression.py  in progress
 |   |-- naive_bayes.py
 |   |-- random_forest.py
 |   |-- svm.py
-|   regression/
+|-- regression/
 |   |-- decision_tree.py        done
 |   |-- random_forest.py        done
 |   |-- lasso.py                done
 |   |-- ridge.py                done
 |   |-- svm.py
-|   clustering/
+|-- clustering/
 |   |-- kmeans.py
 |   |-- dbscan.py
 |   |-- gmm.py
-|   dimensionality/
+|-- dimensionality/
 |   |-- pca.py
 |   |-- tsne.py
 |   |-- isomap.py
 |   |-- svd.py
-|   outlier/
+|-- outlier/
 |   |-- isolation_forest.py
 |   |-- one_class_svm.py
+|-- optimization/
+|   |-- line_search/
+|   |   |-- strong_wolfe.py     done
+|   |-- bfgs.py                 done
+|   |-- gradient_descent.py     done
+|   |-- coordinate_descent.py   done
+|   |-- conjugate_descent.py
 ```
