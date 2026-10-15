@@ -37,13 +37,20 @@ class LogisticRegression(Estimator, Linear):
     def gradient(self, x: NDArray, y: NDArray, theta: NDArray) -> NDArray:
         N = y.size
         p = sigmoid(x @ theta)
-        grad = 1/N * x.T @ ( p - y )
-        grad[1:] += 2 * self.lamda * theta[1:]
+        grad      = 1/N * x.T @ ( p - y )
+        grad[1:] +=  2 * self.lamda * theta[1:]
         return grad
 
-    def hessian(self, x: NDArray, y: NDArray, theta: NDArray) -> NDArray:
-        ... # for newton method
-
+    def hessian(self, x: NDArray, theta: NDArray) -> NDArray:
+        N, F = x.shape
+        p = sigmoid(x @ theta)
+        Rf = np.eye(F)
+        Rf[0, 0] = 0.0
+        r = (p * (1 - p))[:, None]
+        hess  = 1/N * x.T @ (r * x) 
+        hess +=  2  * self.lamda * Rf
+        return hess
+        
     def predict(self, x):
         return sigmoid(self.linear(x))
 
@@ -57,7 +64,6 @@ class LogisticRegression(Estimator, Linear):
 def sigmoid(z: NDArray) -> NDArray:
     # return 1 / (1 + np.exp(-z))
     return np.exp(-np.logaddexp(0, -z))
-
 
 
 class LogisticRegressionGD(LogisticRegression):

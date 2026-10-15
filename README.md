@@ -47,4 +47,5 @@ pyml/
 |   |-- gradient_descent.py     done
 |   |-- coordinate_descent.py   done
 |   |-- conjugate_descent.py
+|   |-- newton_cholesky.py      next up
 ```
