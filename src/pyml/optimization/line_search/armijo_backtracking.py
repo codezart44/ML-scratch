@@ -30,6 +30,7 @@ class ArmijoBacktracking:
 
         f0 = loss     # objective function
         d0 = gk @ pk  # directional derivative
+        assert d0 < 0, d0  # assumes descending search direction
 
         alpha, loss = self.backtracking(loss_fn, f0, d0)
         return alpha, loss

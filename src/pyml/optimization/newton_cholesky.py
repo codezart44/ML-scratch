@@ -3,20 +3,22 @@ from numpy.typing import NDArray
 
 from pyml.base import Optimizer
 from pyml.base import Estimator
+from pyml.optimization.line_search.armijo_backtracking import ArmijoBacktracking
 
 class NewtonCholesky(Optimizer):
     def __init__(
             self,
             iterations_max: int,
             tolerance: float,
-            learning_rate: float | None,
             ):
         self.iterations_max = iterations_max
         self.tolerance = tolerance
-        self.learning_rate = learning_rate
+        self.line_search = ArmijoBacktracking(c1=1e-4, rho=0.5, iterations_max=10)
 
     def run(self, estimator, x, y, params):
         losses = np.full((self.iterations_max,), fill_value=np.nan)
+        
+        loss = estimator.loss(x, y, params)
 
         for i in range(self.iterations_max):
             Hk = estimator.hessian(x, y, params)
@@ -30,8 +32,8 @@ class NewtonCholesky(Optimizer):
             zk = np.linalg.solve(Lk, -gk)
             pk = np.linalg.solve(Lk.T, zk)
 
-            params += self.learning_rate * pk
-            loss = estimator.loss(x, y, params)
+            alpha, loss = self.line_search.run(estimator, x, y, loss, gk, params, pk)
+            params += alpha * pk
             losses[i] = loss
 
         self.losses = losses

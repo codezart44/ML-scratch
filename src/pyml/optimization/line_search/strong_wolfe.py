@@ -31,6 +31,7 @@ class StrongWolfe:
         
         f0 = loss     # f(0), objective function
         d0 = gk @ pk  # d(0), directional derivative
+        assert d0 < 0, d0  # assumes descending search direction
 
         alpha_lo, alpha_hi, loss, grad = self.bracket(loss_fn, grad_fn, pk, f0, d0)
         if alpha_hi == alpha_lo:
