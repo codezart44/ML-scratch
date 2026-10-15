@@ -26,8 +26,8 @@ class StrongWolfe:
             tk: NDArray,  # params
             pk: NDArray,  # direction
         ) -> tuple[float, float, NDArray]:
-        grad_fn = lambda alpha: estimator.gradient(x, y, tk + alpha * pk)
         loss_fn = lambda alpha: estimator.loss(x, y, tk + alpha * pk)
+        grad_fn = lambda alpha: estimator.gradient(x, y, tk + alpha * pk)
         
         f0 = loss     # f(0), objective function
         d0 = gk @ pk  # d(0), directional derivative
