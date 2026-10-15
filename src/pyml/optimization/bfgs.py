@@ -9,8 +9,8 @@ from pyml.optimization.line_search.strong_wolfe import StrongWolfe
 class BFGS(Optimizer):  # Broyden Fletcher Goldfarb Shanno
     def __init__(
             self,
-            iterations_max: int,
-            tolerance: float,
+            iterations_max: int = 100,
+            tolerance: float = 1e-4,
         ):
         self.iterations_max = iterations_max
         self.tolerance = tolerance
@@ -67,8 +67,8 @@ class LBFGS(Optimizer):  # Low memory Broyden Fletcher Goldfarb Shanno
     def __init__(
             self,
             m: int,
-            iterations_max: int,
-            tolerance: float,
+            iterations_max: int = 1000,
+            tolerance: float = 1e-4,
         ):
         self.m = m
         self.iterations_max = iterations_max

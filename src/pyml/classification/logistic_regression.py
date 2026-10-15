@@ -4,17 +4,25 @@ from numpy.typing import ArrayLike, NDArray
 from pyml.base import Estimator, Linear
 from pyml.base import Optimizer
 from pyml.optimization import GradientDescent
+from pyml.optimization import NewtonCholesky
+from pyml.optimization import BFGS, LBFGS
+
 from pyml.config.constants import EPS
 
 
 class LogisticRegression(Estimator, Linear):
+    compatible_optimizers = (
+        GradientDescent,
+        NewtonCholesky,
+        BFGS, LBFGS,
+    )
     def __init__(
             self,
-            lamda: float,
             optimizer: Optimizer,
+            lamda: float = 1e-2,
         ):
-        self.lamda = lamda
         self.optimizer = optimizer
+        self.lamda = lamda
         self.params: NDArray = None
 
     def fit(self, x: ArrayLike, y: ArrayLike) -> None:
@@ -64,28 +72,6 @@ class LogisticRegression(Estimator, Linear):
 def sigmoid(z: NDArray) -> NDArray:
     # return 1 / (1 + np.exp(-z))
     return np.exp(-np.logaddexp(0, -z))
-
-
-class LogisticRegressionGD(LogisticRegression):
-    def __init__(
-            self,
-            lamda: float,
-            batch_size: int | None = None,
-            iterations_max: int = 100,
-            tolerance: float = 1e-4,
-            learning_rate: float = 1e-3,
-        ):
-        optimizer = GradientDescent(
-            batch_size, 
-            iterations_max, 
-            tolerance, 
-            learning_rate
-        )
-        super().__init__(lamda=lamda, optimizer=optimizer)
-
-
-
-
 
 
 ## Scalar and summation form
@@ -154,8 +140,3 @@ class LogisticRegressionGD(LogisticRegression):
 # With l2 penalty:
 # nabla_w nll = 1/n X^T (p - y) + 2 lamda w
 # nabla_b nll = 1/n 1^T (p - y)
-
-
-# multi class classification extension of logistic regression
-class SoftmaxRegression(Estimator, Linear):
-    pass # TODO

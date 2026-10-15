@@ -8,7 +8,7 @@ from pyml.base import Estimator
 class CoordinateDescent(Optimizer):
     def __init__(
             self,
-            iterations_max: int,
+            iterations_max: int = 100,
         ):
         self.iterations_max = iterations_max
 

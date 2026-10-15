@@ -5,11 +5,12 @@ from pyml.base import Optimizer
 from pyml.base import Estimator
 from pyml.optimization.line_search.armijo_backtracking import ArmijoBacktracking
 
+
 class NewtonCholesky(Optimizer):
     def __init__(
             self,
-            iterations_max: int,
-            tolerance: float,
+            iterations_max: int = 100,
+            tolerance: float = 1e-4,
             ):
         self.iterations_max = iterations_max
         self.tolerance = tolerance

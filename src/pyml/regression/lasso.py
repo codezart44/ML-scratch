@@ -7,13 +7,16 @@ from pyml.optimization import CoordinateDescent
 
 
 class Lasso(Estimator, Linear):
+    compatible_optimizers = (
+        CoordinateDescent,
+    )
     def __init__(
             self,
-            lamda: float,
             optimizer: Optimizer,
+            lamda: float = 1e-2,
         ):
-        self.lamda = lamda
         self.optimizer = optimizer
+        self.lamda = lamda
         self.params: NDArray = None
 
     def fit(self, x: ArrayLike, y: ArrayLike):
@@ -45,22 +48,8 @@ class Lasso(Estimator, Linear):
     def predict(self, x: ArrayLike) -> NDArray:
         return self.linear(x)
 
-
-class LassoCD(Lasso):
-    def __init__(
-            self,
-            lamda: float,
-            iterations_max: int = 100,
-        ):
-        optimizer = CoordinateDescent(
-            iterations_max,
-        )
-        super().__init__(lamda=lamda, optimizer=optimizer)
-
-
 # L(theta) = 1/N * l2(y - X @ theta)^2 + lamda * l1(theta)
 # L(theta) = 1/N * Sum( (y - X @ theta)^2 ) + lamda * Sum( abs(theta[1:]) )
-
 
 def soft_threshold(a, b):
     if a > b:

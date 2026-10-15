@@ -12,10 +12,10 @@ from pyml.base import Optimizer
 class GradientDescent(Optimizer):
     def __init__(
             self,
-            batch_size: int | None,
-            iterations_max: int,
-            tolerance: float,
-            learning_rate: float,
+            batch_size: int = None,
+            iterations_max: int = 10_000,
+            tolerance: float = 1e-4,
+            learning_rate: float = 1e-2,
         ):
         self.batch_size = batch_size
         self.iterations_max = iterations_max
