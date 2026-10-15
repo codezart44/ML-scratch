@@ -3,14 +3,14 @@ from numpy.typing import ArrayLike, NDArray
 
 from pyml.base import Estimator, Linear
 from pyml.base import Optimizer
-from pyml.optimization import GradientDescent
+from pyml.optimization import GradientDescent, StochasticGradientDescent
 from pyml.optimization import NewtonCholesky
 from pyml.optimization import BFGS, LBFGS
 
 
 class Ridge(Estimator, Linear):
     compatible_optimizers = (
-        GradientDescent,
+        GradientDescent, StochasticGradientDescent,
         NewtonCholesky,
         BFGS, LBFGS,
     )

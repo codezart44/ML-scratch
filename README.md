@@ -6,27 +6,28 @@
 ```
 pyml/
 |-- base/
-|   |-- tree.py                 done
-|   |-- linear.py               done
-|   |-- neighbor.py             done
-|   |-- svm.py                  ...
+|   |-- tree.py                     done
+|   |-- linear.py                   done
+|   |-- neighbor.py                 done
+|   |-- svm.py                      ...
 |   |-- ensemble.py
 |   |-- clustering.py
 |   |-- decomposition.py
 |   |-- outlier.py
 |   |-- dimensionality.py
 |-- classification/
-|   |-- decision_tree.py        next up
-|   |-- knn.py                  done
-|   |-- logistic_regression.py  in progress
+|   |-- decision_tree.py            
+|   |-- knn.py                      done
+|   |-- logistic_regression.py      done
+|   |-- softmax_regression.py       next up
 |   |-- naive_bayes.py
 |   |-- random_forest.py
 |   |-- svm.py
 |-- regression/
-|   |-- decision_tree.py        done
-|   |-- random_forest.py        done
-|   |-- lasso.py                done
-|   |-- ridge.py                done
+|   |-- decision_tree.py            done
+|   |-- random_forest.py            done
+|   |-- lasso.py                    done
+|   |-- ridge.py                    done
 |   |-- svm.py
 |-- clustering/
 |   |-- kmeans.py
@@ -42,10 +43,11 @@ pyml/
 |   |-- one_class_svm.py
 |-- optimization/
 |   |-- line_search/
-|   |   |-- strong_wolfe.py     done
-|   |-- bfgs.py                 done
-|   |-- gradient_descent.py     done
-|   |-- coordinate_descent.py   done
+|   |   |-- strong_wolfe.py         done
+|   |   |-- armijo_backtracking.py  done
+|   |-- bfgs.py                     done
+|   |-- gradient_descent.py         done
+|   |-- coordinate_descent.py       done
 |   |-- conjugate_descent.py
-|   |-- newton_cholesky.py      next up
+|   |-- newton_cholesky.py          done
 ```

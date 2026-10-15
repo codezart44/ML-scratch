@@ -17,19 +17,25 @@ class Optimizer:
 
 
 class EarlyStopper:
-    def __init__(self, patience: int = 5):
+    def __init__(
+            self,
+            patience: int = 5,
+            delta_min: float = 1e-4,
+        ):
         self.patience = patience
+        self.delta_min = delta_min
         self.best = float("inf")
         self.count = 0
 
     def check(self, loss: np.number) -> bool:
-        if loss < self.best:
+        if self.best - loss > self.delta_min:
             self.best = loss
             self.count = 0
         else:
             self.count += 1
+
         return self.count >= self.patience
-        
+    
     def reset(self) -> None:
         self.best = float('inf')
         self.count = 0
