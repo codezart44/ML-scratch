@@ -41,7 +41,7 @@ class LogisticRegression(Estimator, Linear):
         grad[1:] +=  2 * self.lamda * theta[1:]
         return grad
 
-    def hessian(self, x: NDArray, theta: NDArray) -> NDArray:
+    def hessian(self, x: NDArray, y: NDArray, theta: NDArray) -> NDArray:
         N, F = x.shape
         p = sigmoid(x @ theta)
         Rf = np.eye(F)
