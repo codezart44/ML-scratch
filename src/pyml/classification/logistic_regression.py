@@ -38,8 +38,10 @@ class LogisticRegression(Estimator, Linear):
 
     def loss(self, x: NDArray, y: NDArray, theta: NDArray) -> float:
         N = y.size
-        p = sigmoid(x @ theta)
-        loss = -1/N * (y.T @ np.log(p + EPS) + (1-y).T @ np.log(1-p + EPS))
+        z = x @ theta
+        logp   = log_sigmoid( z)
+        log1mp = log_sigmoid(-z)
+        loss = -1/N * (y.T @ logp + (1-y).T @ log1mp)
         loss += self.lamda * np.sum(theta[1:] ** 2)
         return loss
 
@@ -71,8 +73,26 @@ class LogisticRegression(Estimator, Linear):
 
 
 def sigmoid(z: NDArray) -> NDArray:
-    # return 1 / (1 + np.exp(-z))
+    # 1 / (1 + np.exp(-z))
     return np.exp(-np.logaddexp(0, -z))
+
+def log_sigmoid(z: NDArray) -> NDArray:
+    return -np.logaddexp(0, -z)
+
+
+# Case: p
+# log( 1 / (1 + np.exp(-z)) )
+# log(1) - log(1 + np.exp(-z))
+# - log(np.exp(0) + np.exp(-z))
+# - logaddexp(0, -z)  ->  logsigmoid(z)
+
+# Case: 1 - p
+# log( 1 - 1 / (1 + np.exp(-z)) )
+# log( np.exp(-z) / (1 + np.exp(-z)) )
+# log( 1 / (np.exp(z) + 1) )
+# log(1) - log(np.exp(z) + 1)
+# - log(np.exp(z) + 1)
+# - logaddexp(0, z)  ->  logsigmoid(-z)
 
 
 ## Scalar and summation form
