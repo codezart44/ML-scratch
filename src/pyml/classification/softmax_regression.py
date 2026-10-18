@@ -23,15 +23,17 @@ class SoftmaxRegression(Estimator, Linear):
         self.optimizer = optimizer
         self.lamda = lamda
 
-        self.classes = None
+        self.ohe = OneHotEncoder()
         self.F = None  # features
         self.C = None  # classes
 
     def fit(self, x: ArrayLike, y: ArrayLike) -> None:
         x = np.asarray(x).copy()
         y = np.asarray(y).copy()
-        y_ohe, classes = one_hot_encoding(y)
-        C = classes.size
+
+        self.ohe.fit(y)
+        y_ohe = self.ohe.encode(y)
+        C = self.ohe.classes.size
         N, F = x.shape
         x = np.c_[np.ones(N), x]
 
@@ -40,9 +42,7 @@ class SoftmaxRegression(Estimator, Linear):
 
         params = np.zeros((F+1) * C)
         params = self.optimizer.run(self, x, y_ohe, params)
-        
         self.params  = params.reshape(F+1, C)
-        self.classes = classes
 
     def loss(self, x, y_ohe, theta):  # TODO add regularization
         N = x.shape[0]
@@ -64,8 +64,7 @@ class SoftmaxRegression(Estimator, Linear):
         raise NotImplementedError
 
     def predict(self, x):
-        index = np.argmax(self.linear(x), axis=1)
-        return self.classes[index]
+        return self.ohe.decode(self.linear(x))
 
     def probability(self, x):
         return softmax(self.linear(x))
@@ -86,10 +85,32 @@ def log_softmax(logits: NDArray) -> NDArray:
     return shifted - np.log(exp.sum(axis=1, keepdims=True))
 
 
-def one_hot_encoding(y: NDArray) -> tuple[NDArray, NDArray]:
-    classes, inverse = np.unique(y, return_inverse=True)
-    N = y.size
-    C = classes.size
-    y_ohe = np.zeros((N, C), dtype=float)
-    y_ohe[np.arange(N), inverse] = 1
-    return y_ohe, classes
+class OneHotEncoder:
+    def __init__(self):
+        self.classes = None
+
+    def fit(self, labels: NDArray) -> None:
+        assert labels.ndim == 1, labels.ndim
+        self.classes = np.unique(labels)
+
+    def encode(self, labels: NDArray) -> NDArray:
+        assert self.classes is not None
+        assert labels.ndim == 1, labels.ndim
+        index = np.searchsorted(self.classes, labels)
+        N = labels.size
+        C = self.classes.size
+
+        valid = np.isin(labels, self.classes)
+        assert valid.all() == True, np.unique(labels[~valid])
+
+        onehot = np.zeros((N, C), dtype=float)
+        onehot[np.arange(N), index] = 1.0
+        return onehot
+
+    def decode(self, onehot: NDArray) -> NDArray:
+        assert self.classes is not None
+        assert onehot.ndim == 2, onehot.ndim
+        assert onehot.shape[1] == self.classes.size
+        index = np.argmax(onehot, axis=1)
+        labels = self.classes[index]
+        return labels
