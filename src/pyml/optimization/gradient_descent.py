@@ -59,7 +59,7 @@ class StochasticGradientDescent(Optimizer):
 
     def run(self, estimator, x, y, params):
         losses = np.full((self.iterations_max,), fill_value=np.nan)
-        N = y.size
+        N = x.shape[0]
         assert self.batch_size <= N, N
         index = np.arange(N)
         self.early_stopper.reset()

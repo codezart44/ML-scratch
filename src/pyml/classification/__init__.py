@@ -1,2 +1,3 @@
 from pyml.classification.knn import KNearestVoting
 from pyml.classification.logistic_regression import LogisticRegression
+from pyml.classification.softmax_regression import SoftmaxRegression

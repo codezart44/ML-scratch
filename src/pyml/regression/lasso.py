@@ -15,6 +15,7 @@ class Lasso(Estimator, Linear):
             optimizer: Optimizer,
             lamda: float = 1e-2,
         ):
+        assert isinstance(optimizer, self.compatible_optimizers)
         self.optimizer = optimizer
         self.lamda = lamda
         self.params: NDArray = None

@@ -21,6 +21,7 @@ class LogisticRegression(Estimator, Linear):
             optimizer: Optimizer,
             lamda: float = 1e-2,
         ):
+        assert isinstance(optimizer, self.compatible_optimizers)
         self.optimizer = optimizer
         self.lamda = lamda
         self.params: NDArray = None
@@ -63,7 +64,7 @@ class LogisticRegression(Estimator, Linear):
         return sigmoid(self.linear(x))
 
     def probability(self, x):
-        return sigmoid(self.linear(x)).round(0)
+        return sigmoid(self.linear(x))
 
     def prb(self, x):
         return self.probability(x)
