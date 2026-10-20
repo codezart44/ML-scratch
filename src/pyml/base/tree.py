@@ -38,9 +38,9 @@ class Tree:
             node = queue.pop(0)
             j, t = self.search_split(x, y, node)
             
-            if j is None or t is None:
+            if j is None or t is None:  # leaf node
                 node.target = self.leaf_target(y[node.index])
-            else:
+            else:                       # split node
                 node.j = j
                 node.t = t
                 mask = x[node.index, j] < t
