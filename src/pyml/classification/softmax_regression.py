@@ -22,10 +22,7 @@ class SoftmaxRegression(Estimator, Linear):
         assert isinstance(optimizer, self.compatible_optimizers)
         self.optimizer = optimizer
         self.lamda = lamda
-
         self.ohe = OneHotEncoder()
-        self.F = None  # features
-        self.C = None  # classes
 
     def fit(self, x: ArrayLike, y: ArrayLike) -> None:
         x = np.asarray(x).copy()
@@ -37,17 +34,15 @@ class SoftmaxRegression(Estimator, Linear):
         N, F = x.shape
         x = np.c_[np.ones(N), x]
 
-        self.F = F
-        self.C = C
-
         params = np.zeros((F+1) * (C-1))
         params = self.optimizer.run(self, x, y_ohe, params)
         params = np.c_[np.zeros(F+1), params.reshape(F+1, C-1)]
         self.params = params
 
     def loss(self, x, y_ohe, theta):
+        F, C = x.shape[1]-1, y_ohe.shape[1]
         N = x.shape[0]
-        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
+        Wm = np.c_[np.zeros(F+1), theta.reshape(F+1, C-1)]
         mu = Wm.mean(axis=1, keepdims=True)
 
         logPm = log_softmax(x @ Wm)
@@ -56,8 +51,9 @@ class SoftmaxRegression(Estimator, Linear):
         return loss
 
     def gradient(self, x, y_ohe, theta):
+        F, C = x.shape[1]-1, y_ohe.shape[1]
         N = x.shape[0]
-        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
+        Wm = np.c_[np.zeros(F+1), theta.reshape(F+1, C-1)]
         mu = Wm.mean(axis=1, keepdims=True)
 
         Pm = softmax(x @ Wm)
@@ -66,9 +62,9 @@ class SoftmaxRegression(Estimator, Linear):
         return grad.ravel()
 
     def hessian(self, x, y_ohe, theta):
-        F, C = self.F, self.C
+        F, C = x.shape[1]-1, y_ohe.shape[1]
         N = x.shape[0]
-        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
+        Wm = np.c_[np.zeros(F+1), theta.reshape(F+1, C-1)]
         Rm = np.eye(F+1)
         Rm[0, 0] = 0.0
 
@@ -78,7 +74,7 @@ class SoftmaxRegression(Estimator, Linear):
         for k in range(C-1):
             for s in range(C-1):
                 if k == s:
-                    diag = ( Pm[:,k] * (1 - Pm[:,s]) )[:, None]  # [N, 1]
+                    diag = ( Pm[:,k] * (1 - Pm[:,k]) )[:, None]  # [N, 1]
                     XDXm = 1/N * x.T @ (diag * x)
                     hess[:,k,:,k] = XDXm + 2 * self.lamda * Rm * (1 - 1/C)
                 if k > s:
