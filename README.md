@@ -16,10 +16,10 @@ pyml/
 |   |-- outlier.py
 |   |-- dimensionality.py
 |-- classification/
-|   |-- decision_tree.py            
+|   |-- decision_tree.py            next up
 |   |-- knn.py                      done
 |   |-- logistic_regression.py      done
-|   |-- softmax_regression.py       next up
+|   |-- softmax_regression.py       done
 |   |-- naive_bayes.py
 |   |-- random_forest.py
 |   |-- svm.py
