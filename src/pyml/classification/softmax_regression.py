@@ -42,59 +42,58 @@ class SoftmaxRegression(Estimator, Linear):
 
         params = np.zeros((F+1) * (C-1))
         params = self.optimizer.run(self, x, y_ohe, params)
-        self.params  = params.reshape(F+1, C-1)
+        params = np.c_[np.zeros(F+1), params.reshape(F+1, C-1)]
+        self.params = params
 
     def loss(self, x, y_ohe, theta):
         N = x.shape[0]
-        Wm = theta.reshape(self.F+1, self.C-1)
+        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
+        mu = Wm.mean(axis=1, keepdims=True)
 
-        Zm = np.c_[np.zeros(N), x @ Wm]
-        logPm = log_softmax(Zm)
+        logPm = log_softmax(x @ Wm)
         loss = -1/N * np.sum(y_ohe * logPm)
-        loss += self.lamda * np.sum(Wm[1:,:] ** 2)
+        loss += self.lamda * np.sum( (Wm[1:,:]-mu[1:]) ** 2 )
         return loss
 
     def gradient(self, x, y_ohe, theta):
         N = x.shape[0]
-        Wm = theta.reshape(self.F+1, self.C-1)
+        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
+        mu = Wm.mean(axis=1, keepdims=True)
 
-        Zm = np.c_[np.zeros(N), x @ Wm]
-        Pm = softmax(Zm)
+        Pm = softmax(x @ Wm)
         grad = 1/N * x.T @ (Pm[:,1:] - y_ohe[:,1:])
-        grad[1:,:] += 2 * self.lamda * Wm[1:, :]
+        grad[1:,:] += 2 * self.lamda * ( Wm[1:,1:] - mu[1:] )
         return grad.ravel()
 
     def hessian(self, x, y_ohe, theta):
         F, C = self.F, self.C
-        FC = (F+1) * (C-1)
-        assert FC < 1e3, FC
         N = x.shape[0]
-        Wm = theta.reshape(F+1, C-1) 
+        Wm = np.c_[np.zeros(self.F+1), theta.reshape(self.F+1, self.C-1)]
         Rm = np.eye(F+1)
         Rm[0, 0] = 0.0
 
         hess = np.zeros((F+1, C-1, F+1, C-1), dtype=float)
-        Zm = np.c_[np.zeros(N), x @ Wm]  # [N, C]
-        Pm = softmax(Zm)[:,1:]           # [N, C-1]
+        Pm = softmax(x @ Wm)[:,1:]  # [N, C-1]
 
         for k in range(C-1):
             for s in range(C-1):
-                kron_delta = 1.0 if k==s else 0.0
-                diag = ( Pm[:,k] * (kron_delta - Pm[:,s]) )[:, None]  # [N, 1]
-                hess[:,k,:,s] = 1/N * x.T @ (diag * x)
-                hess[:,k,:,s] += 2 * self.lamda * kron_delta * Rm
+                if k == s:
+                    diag = ( Pm[:,k] * (1 - Pm[:,s]) )[:, None]  # [N, 1]
+                    XDXm = 1/N * x.T @ (diag * x)
+                    hess[:,k,:,k] = XDXm + 2 * self.lamda * Rm * (1 - 1/C)
+                if k > s:
+                    diag = ( - Pm[:,k] * Pm[:,s] )[:, None]      # [N, 1]
+                    XDXm = 1/N * x.T @ (diag * x)
+                    hess[:,k,:,s] = XDXm   + 2 * self.lamda * Rm * (-1/C)
+                    hess[:,s,:,k] = XDXm.T + 2 * self.lamda * Rm * (-1/C)
 
-        return hess.reshape(FC, FC)
+        return hess.reshape((F+1)*(C-1), (F+1)*(C-1))
 
     def predict(self, x):
-        probas = self.probability(x)
-        return self.ohe.decode(probas)
+        return self.ohe.decode(self.linear(x))
 
     def probability(self, x):
-        N = x.shape[0]
-        logits = np.c_[np.zeros(N), self.linear(x)]
-        probas = softmax(logits)
-        return probas
+        return softmax(self.linear(x))
 
     def prb(self, x):
         return self.probability(x)
@@ -141,3 +140,11 @@ class OneHotEncoder:
         index = np.argmax(onehot, axis=1)
         labels = self.classes[index]
         return labels
+
+
+# for k in range(C-1):
+#     for s in range(C-1):
+#         kron_delta = 1.0 if k==s else 0.0
+#         diag = ( Pm[:,k] * (kron_delta - Pm[:,s]) )[:, None]  # [N, 1]
+#         hess[:,k,:,s] = 1/N * x.T @ (diag * x)
+#         hess[:,k,:,s] += 2 * self.lamda * kron_delta * Rm
