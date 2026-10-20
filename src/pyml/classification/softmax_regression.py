@@ -40,38 +40,65 @@ class SoftmaxRegression(Estimator, Linear):
         self.F = F
         self.C = C
 
-        params = np.zeros((F+1) * C)
+        params = np.zeros((F+1) * (C-1))
         params = self.optimizer.run(self, x, y_ohe, params)
-        self.params  = params.reshape(F+1, C)
+        self.params  = params.reshape(F+1, C-1)
 
-    def loss(self, x, y_ohe, theta):  # TODO add regularization
+    def loss(self, x, y_ohe, theta):
         N = x.shape[0]
-        Wm = theta.reshape(self.F+1, self.C)
+        Wm = theta.reshape(self.F+1, self.C-1)
 
-        logp = log_softmax(x @ Wm)
-        loss = -1/N * np.sum(y_ohe * logp)
+        Zm = np.c_[np.zeros(N), x @ Wm]
+        logPm = log_softmax(Zm)
+        loss = -1/N * np.sum(y_ohe * logPm)
+        loss += self.lamda * np.sum(Wm[1:,:] ** 2)
         return loss
 
     def gradient(self, x, y_ohe, theta):
         N = x.shape[0]
-        Wm = theta.reshape(self.F+1, self.C)
-        
-        p = softmax(x @ Wm)
-        grad = 1/N * x.T @ (p - y_ohe)
+        Wm = theta.reshape(self.F+1, self.C-1)
+
+        Zm = np.c_[np.zeros(N), x @ Wm]
+        Pm = softmax(Zm)
+        grad = 1/N * x.T @ (Pm[:,1:] - y_ohe[:,1:])
+        grad[1:,:] += 2 * self.lamda * Wm[1:, :]
         return grad.ravel()
 
     def hessian(self, x, y_ohe, theta):
-        raise NotImplementedError
+        F, C = self.F, self.C
+        FC = (F+1) * (C-1)
+        assert FC < 1e3, FC
+        N = x.shape[0]
+        Wm = theta.reshape(F+1, C-1) 
+        Rm = np.eye(F+1)
+        Rm[0, 0] = 0.0
+
+        hess = np.zeros((F+1, C-1, F+1, C-1), dtype=float)
+        Zm = np.c_[np.zeros(N), x @ Wm]  # [N, C]
+        Pm = softmax(Zm)[:,1:]           # [N, C-1]
+
+        for k in range(C-1):
+            for s in range(C-1):
+                kron_delta = 1.0 if k==s else 0.0
+                diag = ( Pm[:,k] * (kron_delta - Pm[:,s]) )[:, None]  # [N, 1]
+                hess[:,k,:,s] = 1/N * x.T @ (diag * x)
+                hess[:,k,:,s] += 2 * self.lamda * kron_delta * Rm
+
+        return hess.reshape(FC, FC)
 
     def predict(self, x):
-        return self.ohe.decode(self.linear(x))
+        probas = self.probability(x)
+        return self.ohe.decode(probas)
 
     def probability(self, x):
-        return softmax(self.linear(x))
+        N = x.shape[0]
+        logits = np.c_[np.zeros(N), self.linear(x)]
+        probas = softmax(logits)
+        return probas
 
     def prb(self, x):
         return self.probability(x)
-    
+
 
 def softmax(logits: NDArray) -> NDArray:
     shifted = logits - np.max(logits, axis=1, keepdims=True)
