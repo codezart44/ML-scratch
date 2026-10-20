@@ -17,8 +17,8 @@ class NewtonCholesky(Optimizer):
         self.line_search = ArmijoBacktracking(c1=1e-4, rho=0.5, iterations_max=10)
 
     def run(self, estimator, x, y, params):
+        assert params.size < 1e3, params.size
         losses = np.full((self.iterations_max,), fill_value=np.nan)
-        
         loss = estimator.loss(x, y, params)
 
         for i in range(self.iterations_max):
